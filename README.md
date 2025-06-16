@@ -122,6 +122,8 @@ const ast = $ADD.parse(new Lexer("2+3"));
 console.log(ast.contentExps.map((e) => e.text)); // ["2", "+", "3"]
 ```
 
+In the example above we map the `contentExps`, those are all the sub-expressions in the AST (See $AST api documentation below for more info).
+
 ---
 
 ### 🧠 How It Works
@@ -192,9 +194,6 @@ If you want to support chained expressions like `1 + 2 + 3`, you can make your c
 
 ```js
 class $ADD extends $AST {
-  static allowIncompleteParse = true;
-  static incompleteParseThreshold = 2;
-
   static SHAPE = new Shape($NUMBER, "+", this);
 }
 ```
@@ -242,11 +241,13 @@ To do this, we create a new AST class that expects:
 
 ```js
 class $GROUP extends $AST {
-  static SHAPE = new Shape("(", $EXPR, ")");
+  static SHAPE = new Shape("(", () => $EXPR, ")");
 }
 ```
 
 This tells the parser: “wrap another expression inside parentheses.”
+
+Notice also the use of an arrow function `() => $EXPR`, because we haven't defined $EXPR yet (we will in the next section), we can lazily access it witht the arrow function. This helps when you have interdependent expressions like in the case of `$GROUP`and`$EXPR`
 
 ---
 
@@ -390,6 +391,208 @@ static fallbackToFirstExp = true;
 
 This tells Panda Parse:  
 “If this node fails to match fully, return the first successfully parsed subcomponent instead.”
+
+---
+
+# 🧾 $AST API Documentation
+
+`$AST` is the base class for all syntax tree nodes in Panda Parse. You extend it to define new language constructs and parsing rules using declarative `SHAPE` definitions.
+
+---
+
+## 🧱 Basic Usage
+
+```js
+class $NUMBER extends $AST {
+  static SHAPE = new Shape(/^\d+/);
+}
+```
+
+Then you can parse using:
+
+```js
+const ast = $NUMBER.parse(new Lexer("42"));
+```
+
+---
+
+## 📦 Static Properties
+
+### `static AST = true`
+
+Identifies this class as a valid AST node.
+
+### `static SHAPE`
+
+Defines the grammar rule for this node using a `Shape` object.
+
+### `static allowIncompleteParse = false`
+
+Allows the node to match partially parsed inputs (see below).
+
+### `static incompleteParseThreshold = 1`
+
+Minimum number of successful components required when `allowIncompleteParse` is enabled.
+
+### `static fallbackToFirstExp = true`
+
+If the node fails to fully parse, fallback to the first successfully parsed expression.
+
+---
+
+## 🧠 Constructor
+
+```js
+new MyAST({ exps, ...rest });
+```
+
+Called internally by `.parse()` to construct a node with child expressions.
+
+### Parameters:
+
+- `exps` – array of parsed sub-expressions (ASTs or Tokens)
+- Any other fields passed via `...rest` are stored on the instance
+
+---
+
+## 🔍 Instance Properties
+
+### `.exps`
+
+All expressions (both ASTs and Tokens) parsed by the shape.
+
+### `.contentExps`
+
+Filtered version of `exps` — includes only:
+
+- AST nodes
+- Tokens that are not whitespace
+
+### `.tokens`
+
+All tokens (flat array), including whitespace and those nested in child ASTs.
+
+### `.contentTokens`
+
+Only non-whitespace tokens.
+
+### `.whiteSpaceTokens`
+
+Only whitespace tokens.
+
+### `.text`
+
+The full matched text string from all tokens.
+
+### `.lineStart`, `.lineEnd`
+
+The absolute start and end character offsets of the AST on the original input line.
+
+### `.line`
+
+The zero-based line index of the first token.
+
+### `.col`
+
+The column position (in the line) of the first token.
+
+---
+
+## 🧪 `.validate(env)`
+
+Validates the AST node. Returns an array of `ASTError` instances based on:
+
+- missing tokens
+- shape expectation failures
+
+### Example:
+
+```js
+const errors = ast.validate(new TypeEnv());
+```
+
+---
+
+## 🧾 `.toSimpleObj(lineStart = 0, lineEnd = Infinity, offset = 0)`
+
+Returns a simplified object representation of the AST tree, suitable for visualization or debugging.
+
+---
+
+## 🎨 `.getVisibleTokens(lineStart, lineEnd)`
+
+Returns all visible tokens within a given line range, including metadata for highlighting.
+
+---
+
+## 🧠 Static Method: `.parse(lexer)`
+
+Parses a node from a given `Lexer` instance.
+
+### Returns:
+
+- An instance of the AST subclass
+- `null` if parsing fails
+
+Internally, it iterates over the class's `SHAPE`, collecting tokens or nested ASTs.
+
+Handles:
+
+- fallback to first expression (if enabled)
+- incomplete parse tokens (when `allowIncompleteParse` is set)
+- token-level caching and cursor restoration
+
+---
+
+## 🧪 Static Method: `.test(label, fn, testJS = true)`
+
+Registers unit tests using `.SAMPLES`.
+
+```js
+class $ADD extends $AST {
+  static SHAPE = new Shape($NUMBER, "+", $NUMBER);
+  static SAMPLES = ["1+2", "10 + 5"];
+}
+```
+
+Run:
+
+```js
+$ADD.test("🧪 ", (ast) => {
+  console.log(ast.text);
+});
+```
+
+---
+
+## ❌ Static Method: `.testInvalid(label, fn)`
+
+Runs validation tests using `SAMPLES_INVALID`, which should be an array of:
+
+```js
+{
+  source: "invalid input here",
+  errors: [
+    { line: 0, col: 5, message: "Expected something" }
+  ]
+}
+```
+
+Compares actual validation errors against expected ones.
+
+---
+
+## 🔄 `.toJS()`
+
+Optional method to "compile" or transform the AST node. Override in subclasses as needed.
+
+### Example:
+
+```js
+toJS() {
+  return `${this.constructor.name}`;
+}
+```
 
 ---
 

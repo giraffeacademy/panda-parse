@@ -1,0 +1,26 @@
+{
+  "name": "panda-parse",
+  "version": "1.0.0",
+  "description": "A simple parsing utility for converting strings into Abstract Syntax Trees (ASTs)",
+  "main": "index.js",
+  "scripts": {
+    "test": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giraffeacademy/panda-parse.git"
+  },
+  "keywords": [
+    "parsing"
+  ],
+  "author": "giraffeacademy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/giraffeacademy/panda-parse/issues"
+  },
+  "homepage": "https://github.com/giraffeacademy/panda-parse#readme",
+  "dependencies": {
+    "t-rex-test": "file:../t-rex-test",
+    "vite": "^6.3.5"
+  }
+}
