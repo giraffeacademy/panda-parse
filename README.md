@@ -440,7 +440,7 @@ If the node fails to fully parse, fallback to the first successfully parsed expr
 
 ---
 
-## Constructor
+### Constructor
 
 ```js
 new MyAST({ exps, ...rest });
@@ -455,81 +455,56 @@ Called internally by `.parse()` to construct a node with child expressions.
 
 ---
 
-## Instance Properties
+### Instance Properties
 
-### `.exps`
+#### `.exps`
 
 All expressions (both ASTs and Tokens) parsed by the shape.
 
-### `.contentExps`
+#### `.contentExps`
 
 Filtered version of `exps` — includes only:
 
 - AST nodes
 - Tokens that are not whitespace
 
-### `.tokens`
+#### `.tokens`
 
 All tokens (flat array), including whitespace and those nested in child ASTs.
 
-### `.contentTokens`
+#### `.contentTokens`
 
 Only non-whitespace tokens.
 
-### `.whiteSpaceTokens`
+#### `.whiteSpaceTokens`
 
 Only whitespace tokens.
 
-### `.text`
+#### `.text`
 
 The full matched text string from all tokens.
 
-### `.lineStart`, `.lineEnd`
+#### `.lineStart`, `.lineEnd`
 
 The absolute start and end character offsets of the AST on the original input line.
 
-### `.line`
+#### `.line`
 
 The zero-based line index of the first token.
 
-### `.col`
+#### `.col`
 
 The column position (in the line) of the first token.
 
----
-
-## `.validate(env)`
-
-Validates the AST node. Returns an array of `ASTError` instances based on:
-
-- missing tokens
-- shape expectation failures
-
-### Example:
-
-```js
-const errors = ast.validate(new TypeEnv());
-```
-
----
-
-## `.toSimpleObj(lineStart = 0, lineEnd = Infinity, offset = 0)`
-
-Returns a simplified object representation of the AST tree, suitable for visualization or debugging.
-
----
-
-## `.getVisibleTokens(lineStart, lineEnd)`
+#### `.getVisibleTokens(lineStart, lineEnd)`
 
 Returns all visible tokens within a given line range, including metadata for highlighting.
 
----
-
-## Static Method: `.parse(lexer)`
+### Static Method: `.parse(lexer)`
 
 Parses a node from a given `Lexer` instance.
 
-### Returns:
+#### Returns:
 
 - An instance of the AST subclass
 - `null` if parsing fails
@@ -541,20 +516,6 @@ Handles:
 - fallback to first expression (if enabled)
 - incomplete parse tokens (when `allowIncompleteParse` is set)
 - token-level caching and cursor restoration
-
-## `.toJS()`
-
-Optional method to "compile" or transform the AST node. Override in subclasses as needed. This could also say `toC` or `toJava`, etc.
-
-### Example:
-
-```js
-toJS() {
-  return `${this.constructor.name}`;
-}
-```
-
----
 
 ## Lexer API Documentation
 
@@ -672,7 +633,7 @@ Useful for memoizing results in recursive or repeated patterns.
 
 ---
 
-## 🔍 Matching Input
+## Matching Input
 
 ### `lexer.taste(pattern)`
 
