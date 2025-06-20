@@ -37,7 +37,6 @@ export class $AST {
   constructor({ exps = [], ...rest } = {}) {
     Object.assign(this, rest);
 
-    this.id = useId();
     this._exps = exps;
     this._tokens = [];
     this.exps.forEach((exp, i) => {
@@ -117,7 +116,6 @@ export class $AST {
           col: exp.col,
           indent: exp.indent,
           astName: this.name.slice(1),
-          astId: this.id,
         });
     });
     return tokens;
@@ -536,7 +534,7 @@ export class ShapeExp {
       this.value = new Shape(...this.value);
 
       this.name = this.value.map((o) => o.name || `${o}`).join("-");
-    } else if (this.SUB_SHAPE_EXP) this.name = this.value.id.toString();
+    } else if (this.SUB_SHAPE_EXP) this.name = Date.now();
   }
 
   static formatRegex(regex) {
