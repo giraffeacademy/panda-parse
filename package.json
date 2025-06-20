@@ -1,6 +1,6 @@
 {
   "name": "panda-parse",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A simple parsing utility for converting strings into Abstract Syntax Trees (ASTs)",
   "main": "index.js",
   "scripts": {
