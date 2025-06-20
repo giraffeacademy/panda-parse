@@ -621,7 +621,6 @@ export class Shape extends Array {
   constructor(...exps) {
     super();
 
-    this.id = useId();
     const isLimitExp = (expIndex) => {
       const exp = exps[expIndex];
       return (

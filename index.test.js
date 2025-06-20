@@ -288,7 +288,7 @@ useTests("binarySearch", () => {
 });
 
 useTests("$AST", () => {
-  it(" README Examples", () => {
+  it("README Examples", () => {
     class $NUMBER extends $AST {
       static SHAPE = new Shape(/^\d+/); // Match one or more digits
     }
