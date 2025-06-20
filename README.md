@@ -314,6 +314,74 @@ With this foundation, you can:
 
 ---
 
+## Repeating Shape Elements with `{min, max}` Options
+
+Panda Parse allows you to repeat a single shape element multiple times using `{ min, max }` options.
+
+This is useful for matching lists, sequences, or repeated patterns with control over how many times they must appear.
+
+---
+
+### Basic Usage
+
+You can pass an options object directly after a shape term in your `Shape` definition:
+
+```js
+new Shape(Term, { min: 1, max: 5 });
+```
+
+This tells the parser:
+
+- Try to match `Term` repeatedly
+- Match **at least** 1 time
+- Match **at most** 5 times
+
+If fewer than `min` matches occur, the parse will fail. If more than `max` matches are found, the parser will stop consuming after `max` matches.
+
+---
+
+### Example: Parsing a List
+
+```js
+class $LIST extends $AST {
+  static allowIncompleteParse = true;
+  static SHAPE = new Shape("[", $NUMBER, { min: 1, max: Infinity }, "]");
+}
+```
+
+This shape matches:
+
+- an opening bracket `[`
+- one or more `$NUMBER` nodes
+- a closing bracket `]`
+
+### Accepts:
+
+```
+[1]
+[1 2 3]
+[10 20 30 40 50]
+```
+
+### Rejects:
+
+```
+[]
+[   ]
+```
+
+Because `min: 1` requires **at least one** `$NUMBER` inside the brackets.
+
+---
+
+### Notes
+
+- This syntax works for **any shape element**, whether it's a regex, string, or AST class.
+- You can also use this to enforce exact counts (e.g. `{ min: 2, max: 2 }` requires exactly two).
+- Repeated elements are parsed in sequence — back-to-back — until the limit is reached or a non-matching token appears.
+
+---
+
 ## Incomplete Parsing Options
 
 Panda Parse allows for **flexible matching**, especially useful in live coding environments, REPLs, or when building interactive tools like editors and validators.
