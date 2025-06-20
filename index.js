@@ -515,8 +515,7 @@ export class ShapeExp {
       typeof this.value === "string" || this.value instanceof RegExp;
     this.AST_EXP =
       typeof this.value === "function" &&
-      !!this.value.name &&
-      this.value.name[0] === "$";
+      /^class\s/.test(this.value.toString());
     this.SUB_SHAPE_EXP = this.value instanceof Shape;
     this.OPTION_EXP = Array.isArray(this.value) && !this.SUB_SHAPE_EXP;
     this.LAZY_EXP = typeof this.value === "function" && !this.AST_EXP;
