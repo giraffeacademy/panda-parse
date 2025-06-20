@@ -1,6 +1,6 @@
 {
   "name": "panda-parse",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple parsing utility for converting strings into Abstract Syntax Trees (ASTs)",
   "main": "index.js",
   "scripts": {
@@ -19,8 +19,8 @@
     "url": "https://github.com/giraffeacademy/panda-parse/issues"
   },
   "homepage": "https://github.com/giraffeacademy/panda-parse#readme",
-  "dependencies": {
-    "t-rex-test": "file:../t-rex-test",
+  "devDependencies": {
+    "t-rex-test": "^1.0.0",
     "vite": "^6.3.5"
   }
 }
